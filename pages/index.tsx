@@ -11,7 +11,7 @@ const Home: NextPage = () => {
         {GAMES.map((game) => (
           <Grid item key={game}>
             <Typography variant="h4">{GAME_FRIENDLY_NAME[game]}</Typography>
-            <Leaderboard game="WARS" />
+            <Leaderboard game={game} />
           </Grid>
         ))}
       </Grid>
