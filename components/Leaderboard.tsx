@@ -102,8 +102,8 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
                 >
                   <TableCell>{row.human_index ?? "N/A"}</TableCell>
                   <TableCell>{row.username ?? "N/A"}</TableCell>
-                  <TableCell>{row.victories ?? "0"}</TableCell>
                   <TableCell>{row.played ?? "0"}</TableCell>
+                  <TableCell>{row.victories ?? "0"}</TableCell>
                 </TableRow>
               ))}
           </TableBody>
