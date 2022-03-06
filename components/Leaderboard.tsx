@@ -63,7 +63,6 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
           if (currentEntry.username == username) {
             break;
           } else if (i == leaderboardDataSplit.length - 1) {
-            console.log(userEntry?.username);
             leaderboardDataTemp = insertIntoArray(
               leaderboardDataSplit,
               i + 1,
@@ -75,6 +74,7 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
 
       setLeaderboardData(leaderboardDataTemp);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawLeaderboardData, cutOffPoint, isPlayerEntryValidating]);
   return (
     <Box>
