@@ -5,7 +5,7 @@ import { useEffect } from "react";
 const Home: NextPage = () => {
   const router = useRouter();
   useEffect(() => {
-    router.push("/leaderboards");
+    router.push("/leaderboards-monthly");
   }, [router]);
 
   return (

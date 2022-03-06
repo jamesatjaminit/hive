@@ -15,21 +15,21 @@ const Leaderboards: NextPage = () => {
   return (
     <>
       <NextSeo
-        title="Leaderboards"
-        description="Check the Hive leaderboards and your personal stats on this site!"
+        title="Monthly Leaderboards"
+        description="Check the Hive monthly leaderboards and your personal stats on this site!"
         openGraph={{
           type: "website",
           locale: "en_UK",
           url: "https://hive.jaminit.co.uk/leaderboards",
           site_name: "Hive Info",
-          title: "Hive Leaderboards",
+          title: "Hive Monthly Leaderboards",
           description:
-            "Check the Hive leaderboards and your personal stats on this site!",
+            "Check the Hive monthly leaderboards and your personal stats on this site!",
         }}
       />
       <Container sx={{ mt: 5, mb: 10 }}>
         <Typography variant="h3" sx={{ mb: 2 }}>
-          Hive Leaderboards
+          Hive Monthly Leaderboards
         </Typography>
         <form onSubmit={submitUsername}>
           <TextField

@@ -13,6 +13,7 @@ import { theme } from "../lib/theme";
 import { NextPage } from "next";
 import type { Game, LeaderboardEntry } from "../lib/types";
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 interface Props {
   game: Game;
   username?: string;
@@ -25,66 +26,56 @@ const insertIntoArray = (arr: Array<any>, index: number, newItem: unknown) => [
   // part of the array after the specified index
   ...arr.slice(index),
 ];
+
 const Leaderboard: NextPage<Props> = ({ game, username }) => {
+  const mainLeaderboardFetcher = (url: string) =>
+    fetch(url).then((r) => r.json());
+  const playerLeaderboardFetcher = () =>
+    fetch(
+      `https://api.playhive.com/v0/game/monthly/player/${game.toLowerCase()}/${username}`
+    ).then((r) => r.json() ?? null);
   const [cutOffPoint, setCutOffPoint] = useState(3);
-  const [userEntry, setUserEntry] = useState<LeaderboardEntry>();
-  const [rawLeaderboardData, setRawLeaderboardData] =
-    useState<Array<LeaderboardEntry>>();
   const [leaderboardData, setLeaderboardData] =
     useState<Array<LeaderboardEntry>>();
   function toggleCutOff() {
     setCutOffPoint(cutOffPoint == 3 ? 10 : 3);
   }
+  const { data: rawLeaderboardData, error: mainLeaderboardError } = useSWR(
+    "https://api.playhive.com/v0/game/monthly/" + game.toLowerCase(),
+    mainLeaderboardFetcher
+  );
+  const shouldFetchPlayer = !!username;
+  let {
+    data: userEntry,
+    error: playerEntryError,
+    isValidating: isPlayerEntryValidating,
+  } = useSWR(
+    shouldFetchPlayer ? username + game : null,
+    playerLeaderboardFetcher
+  );
   useEffect(() => {
-    async function fetchLeaderboardData() {
-      const response = await fetch(
-        "https://api.playhive.com/v0/game/monthly/" + game.toLowerCase()
-      );
-      setRawLeaderboardData(await response.json());
-    }
-    fetchLeaderboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
-    async function fetchUserEntry() {
-      if (username) {
-        const response = await fetch(
-          `https://api.playhive.com/v0/game/monthly/player/${game.toLowerCase()}/${username}`
-        );
-        if (response.status == 200) {
-          setUserEntry(await response.json());
-        } else {
-          setUserEntry({
-            index: -1,
-            username: username,
-          });
-        }
-      }
-    }
-    fetchUserEntry();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username]);
-  useEffect(() => {
-    if (rawLeaderboardData) {
+    if (rawLeaderboardData && !isPlayerEntryValidating) {
       let leaderboardDataSplit = rawLeaderboardData?.slice(0, cutOffPoint);
       let leaderboardDataTemp = leaderboardDataSplit;
-      if (userEntry) {
+      if (username) {
         for (let i = 0; i < leaderboardDataSplit.length; i++) {
           const currentEntry = leaderboardDataSplit[i];
-          if (currentEntry.username == userEntry?.username) {
+          if (currentEntry.username == username) {
             break;
           } else if (i == leaderboardDataSplit.length - 1) {
+            console.log(userEntry?.username);
             leaderboardDataTemp = insertIntoArray(
               leaderboardDataSplit,
               i + 1,
-              userEntry
+              userEntry ?? { username }
             );
           }
         }
       }
+
       setLeaderboardData(leaderboardDataTemp);
     }
-  }, [rawLeaderboardData, userEntry, cutOffPoint]);
+  }, [rawLeaderboardData, cutOffPoint, isPlayerEntryValidating]);
   return (
     <Box>
       <TableContainer sx={{ my: 5, mb: 2 }}>
@@ -111,8 +102,8 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
                 >
                   <TableCell>{row.human_index ?? "N/A"}</TableCell>
                   <TableCell>{row.username ?? "N/A"}</TableCell>
-                  <TableCell>{row.victories ?? "N/A"}</TableCell>
-                  <TableCell>{row.played ?? "N/A"}</TableCell>
+                  <TableCell>{row.victories ?? "0"}</TableCell>
+                  <TableCell>{row.played ?? "0"}</TableCell>
                 </TableRow>
               ))}
           </TableBody>
