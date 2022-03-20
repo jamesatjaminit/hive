@@ -91,7 +91,7 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
                 key={row.index}
                 style={{
                   backgroundColor:
-                    row.username == username
+                    row.username.toLowerCase() == username?.toLowerCase()
                       ? theme.colors.grape[9]
                       : undefined,
                 }}
