@@ -3,7 +3,7 @@ import Leaderboard from "../components/Leaderboard";
 import { GAMES, GAME_FRIENDLY_NAME } from "../lib/consts";
 import { useState, FormEvent } from "react";
 import { NextSeo } from "next-seo";
-import { Box, Button, Grid, TextInput } from "@mantine/core";
+import { Box, Button, Grid, TextInput, Container } from "@mantine/core";
 import { User } from "tabler-icons-react";
 
 const LeaderboardsMonthly: NextPage = () => {
@@ -34,7 +34,7 @@ const LeaderboardsMonthly: NextPage = () => {
             "Check the Hive monthly leaderboards and your personal stats on this site!",
         }}
       />
-      <Box sx={{ marginLeft: 50, marginBottom: 50 }}>
+      <Container size="xl">
         <h1>Hive Monthly Leaderboards</h1>
         <Box sx={{ maxWidth: 250 }}>
           <form onSubmit={submitUsername}>
@@ -61,7 +61,7 @@ const LeaderboardsMonthly: NextPage = () => {
             </Grid.Col>
           ))}
         </Grid>
-      </Box>
+      </Container>
     </>
   );
 };
