@@ -1,19 +1,9 @@
-import {
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  Box,
-} from "@mui/material";
-import { theme } from "../lib/theme";
 import { NextPage } from "next";
 import type { Game, LeaderboardEntry } from "../lib/types";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
+import { Box, Button, Grid, Table, useMantineTheme } from "@mantine/core";
+import { useScrollIntoView, useMediaQuery } from "@mantine/hooks";
 interface Props {
   game: Game;
   username?: string;
@@ -28,6 +18,11 @@ const insertIntoArray = (arr: Array<any>, index: number, newItem: unknown) => [
 ];
 
 const Leaderboard: NextPage<Props> = ({ game, username }) => {
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery("(max-width: 500px)");
+  const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+    offset: 60,
+  });
   const mainLeaderboardFetcher = (url: string) =>
     fetch(url).then((r) => r.json());
   const playerLeaderboardFetcher = () =>
@@ -39,6 +34,9 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
     useState<Array<LeaderboardEntry>>();
   function toggleCutOff() {
     setCutOffPoint(cutOffPoint == 3 ? 10 : 3);
+    if (cutOffPoint == 3 && isMobile) {
+      scrollIntoView();
+    }
   }
   const { data: rawLeaderboardData, error: mainLeaderboardError } = useSWR(
     "https://api.playhive.com/v0/game/monthly/" + game.toLowerCase(),
@@ -71,46 +69,43 @@ const Leaderboard: NextPage<Props> = ({ game, username }) => {
           }
         }
       }
-
       setLeaderboardData(leaderboardDataTemp);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawLeaderboardData, cutOffPoint, isPlayerEntryValidating]);
   return (
-    <Box>
-      <TableContainer sx={{ my: 5, mb: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Position</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>Games Played</TableCell>
-              <TableCell>Games Won</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {leaderboardData &&
-              leaderboardData.map((row) => (
-                <TableRow
-                  key={row.index}
-                  style={{
-                    backgroundColor:
-                      row.username == username
-                        ? theme.palette.grey[800]
-                        : undefined,
-                  }}
-                >
-                  <TableCell>{row.human_index ?? "N/A"}</TableCell>
-                  <TableCell>{row.username ?? "N/A"}</TableCell>
-                  <TableCell>{row.played ?? "0"}</TableCell>
-                  <TableCell>{row.victories ?? "0"}</TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Grid container justifyContent="center">
-        <Button onClick={toggleCutOff}>
+    <Box ref={targetRef}>
+      <Table horizontalSpacing="sm" striped>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Username</th>
+            <th>Games Played</th>
+            <th>Games Won</th>
+          </tr>
+        </thead>
+        <tbody>
+          {leaderboardData &&
+            leaderboardData.map((row) => (
+              <tr
+                key={row.index}
+                style={{
+                  backgroundColor:
+                    row.username == username
+                      ? theme.colors.grape[9]
+                      : undefined,
+                }}
+              >
+                <th>{row.human_index ?? "N/A"}</th>
+                <th>{row.username ?? "N/A"}</th>
+                <th>{row.played ?? "0"}</th>
+                <th>{row.victories ?? "0"}</th>
+              </tr>
+            ))}
+        </tbody>
+      </Table>
+      <Grid justify="center" sx={{ marginTop: 20 }}>
+        <Button onClick={toggleCutOff} variant="outline">
           Show {cutOffPoint != 3 ? "Less" : "More"}
         </Button>
       </Grid>

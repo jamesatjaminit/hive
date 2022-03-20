@@ -1,10 +1,10 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
 import type { AppProps } from "next/app";
 import { theme } from "../lib/theme";
 import { DefaultSeo } from "next-seo";
+import { MantineProvider } from "@mantine/core";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={theme}>
+    <MantineProvider theme={theme} withGlobalStyles>
       <DefaultSeo
         openGraph={{
           type: "website",
@@ -14,9 +14,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
         titleTemplate="%s | Hive Info"
       />
-      <CssBaseline />
       <Component {...pageProps} />
-    </ThemeProvider>
+    </MantineProvider>
   );
 }
 
