@@ -4,7 +4,7 @@ import { DefaultSeo } from "next-seo";
 import { MantineProvider } from "@mantine/core";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <MantineProvider theme={theme} withGlobalStyles>
+    <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <DefaultSeo
         openGraph={{
           type: "website",
